@@ -19,11 +19,11 @@ const port = parsePort(process.env.PORT);
 export const config = {
   port,
   host: process.env.HOST || '127.0.0.1',
-  webOrigin: process.env.WEB_ORIGIN || 'http://localhost:5173',
+  webOrigin: process.env.WEB_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173',
   baiduMapAuthToken: process.env.BAIDU_MAP_AUTH_TOKEN || '',
   baiduMapServerAk: process.env.BAIDU_MAP_SERVER_AK || '',
   deepseekApiKey: process.env.DEEPSEEK_API_KEY || '',
-  deepseekModel: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
+  deepseekModel: process.env.DEEPSEEK_MODEL || 'deepseek-flash',
 };
 
 export function providerStatus() {

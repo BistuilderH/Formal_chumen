@@ -21,10 +21,13 @@ async function readBody(req) {
   } catch (e) { if (e instanceof ApiError) throw e; throw new ApiError(400, 'INVALID_JSON', 'JSON 格式不正确'); }
 }
 
-export function createApp({ planner = generateCandidates, llm = new LlmProvider() } = {}) {
+export function createApp({ planner = generateCandidates, llm = new LlmProvider(), webOrigin = config.webOrigin } = {}) {
   const clients = new Map();
   let activePlans = 0;
-  const origins = new Set(config.webOrigin.split(',').map(x => x.trim()));
+  const origins = new Set(webOrigin.split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean)
+    .map(origin => new URL(origin).origin));
   function reply(req, res, status, data) {
     const origin = req.headers.origin;
     const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store',
@@ -54,6 +57,7 @@ export function createApp({ planner = generateCandidates, llm = new LlmProvider(
       const url = new URL(req.url, 'http://localhost');
       const parts = url.pathname.split('/').filter(Boolean);
       if (req.method === 'GET' && url.pathname === '/api/health') return reply(req, res, 200, { ok: true, service: 'chumen-api', apiVersion: 2, providers: providerStatus(), storage: 'memory' });
+      if (req.method === 'GET' && parts[0] === 'api' && parts[1] === 'shares' && parts.length === 3) return reply(req, res, 200, store.getPublicShare(parts[2]));
       if (req.method === 'POST') {
         const now = Date.now();
         for (const [key, value] of clients) if (now > value.until) clients.delete(key);
@@ -81,6 +85,7 @@ export function createApp({ planner = generateCandidates, llm = new LlmProvider(
       if (req.method === 'GET' && parts.length === 3) return reply(req, res, 200, store.publicRoom(room, viewer));
       if (req.method === 'POST' && parts.length === 4) {
         const body = await readBody(req);
+        if (parts[3] === 'shares') return reply(req, res, 201, store.createPublicShare(room, viewer, body));
         if (parts[3] === 'votes') store.addVote(room, viewer, body);
         else if (parts[3] === 'comments') store.addComment(room, viewer, body);
         else if (['generate', 'regenerate', 'rollback'].includes(parts[3])) {

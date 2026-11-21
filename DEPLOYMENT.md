@@ -51,7 +51,7 @@ PORT=平台提供的端口
 WEB_ORIGIN=https://你的前端域名
 BAIDU_MAP_SERVER_AK=百度服务端AK
 DEEPSEEK_API_KEY=DeepSeek密钥
-DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_MODEL=deepseek-flash
 ```
 
 `BAIDU_MAP_SERVER_AK` 和 `DEEPSEEK_API_KEY` 只能放后端。`BAIDU_MAP_AUTH_TOKEN` 当前保留为配置位，但本版路线生成使用百度 Web 服务 API AK，不依赖 Agent Token。

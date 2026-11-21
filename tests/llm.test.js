@@ -18,11 +18,11 @@ test('extracts Chinese preferences using JSON output and only the official endpo
     assert.equal(request.messages[1].content, '想做手工，再吃饭，安静些');
     assert.match(request.messages[0].content, /JSON/);
     assert.equal(request.stream, false);
-    return completion({ activityQueries: [' 手工DIY ', '餐厅'], preferenceSummary: '先做手工再吃饭，偏好安静。' });
+    return completion({ activityQueries: [' 手工DIY ', '餐厅'], foodSearchTerms: ['清淡餐厅', '安静餐厅'], preferenceSummary: '先做手工再吃饭，偏好安静。' });
   } });
   const result = await provider.normalizePreference(' 想做手工，再吃饭，安静些 ');
   assert.equal(calls, 1);
-  assert.deepEqual(result, { provider: 'deepseek', text: '想做手工，再吃饭，安静些', preferences: { activityQueries: ['手工DIY', '餐厅'], preferenceSummary: '先做手工再吃饭，偏好安静。' } });
+  assert.deepEqual(result, { provider: 'deepseek', text: '想做手工，再吃饭，安静些', preferences: { activityQueries: ['手工DIY', '餐厅'], foodSearchTerms: ['清淡餐厅', '安静餐厅'], preferenceSummary: '先做手工再吃饭，偏好安静。' } });
 });
 
 test('missing key fails explicitly without a network call or demo fallback', async () => {
@@ -85,6 +85,7 @@ test('invalid JSON, truncated content, and invalid schema are rejected', async t
     ['nonstring query', () => completion({ preferenceSummary: '吃饭', activityQueries: [1] })],
     ['oversized query', () => completion({ preferenceSummary: '吃饭', activityQueries: ['长'.repeat(41)] })],
     ['too many queries', () => completion({ preferenceSummary: '吃饭', activityQueries: Array(7).fill('餐厅') })],
+    ['too many food terms', () => completion({ preferenceSummary: '清淡', foodSearchTerms: Array(5).fill('清淡餐厅') })],
   ];
   for (const [name, response] of cases) {
     await t.test(name, async () => {

@@ -1,6 +1,7 @@
 import { randomBytes, createHash } from 'node:crypto';
 import { assert } from './errors.js';
 const rooms = new Map();
+const shares = new Map();
 const token = () => randomBytes(32).toString('base64url');
 const id = (p) => p + '_' + randomBytes(10).toString('hex');
 const hash = (v) => createHash('sha256').update(v || '').digest('hex');
@@ -29,6 +30,7 @@ export function normalizeInput(body = {}, previous = {}) {
     accessMinutes: range(m.accessMinutes, 20, 1, 60, '公交接驳时间'),
     date: str(m.date || '2026-09-30', 10), meetTime: str(m.meetTime || '15:00', 5),
     endTime: str(m.endTime || '22:00', 5), preference: str(m.preference, 2000),
+    preferenceSearchTerms: Array.isArray(m.preferenceSearchTerms) ? m.preferenceSearchTerms.filter(term => typeof term === 'string' && term.trim()).slice(0, 4).map(term => str(term, 40)) : [],
   };
   for (const key of ['meetTime', 'endTime']) assert(/^([01]\d|2[0-3]):[0-5]\d$/.test(input[key]), 400, 'INVALID_INPUT', '时间格式应为 HH:mm');
   assert(/^\d{4}-\d{2}-\d{2}$/.test(input.date), 400, 'INVALID_INPUT', '日期格式应为 YYYY-MM-DD');
@@ -138,4 +140,24 @@ export function publicRoom(room, viewer) {
     generation: { status: room.generation.status, stage: room.generation.stage, code: room.generation.code,
       message: room.generation.message, candidates: (room.generation.candidates || []).map(c => viewCandidate(c, room, viewer, room.generation.plan?.input)) },
     ...(viewer.id === room.hostId ? { inviteToken: room.inviteToken } : {}) };
+}
+
+export function createPublicShare(room, viewer, body) {
+  assert(viewer.id === room.hostId || room.members.some(member => member.id === viewer.id), 403, 'FORBIDDEN', '无权分享此方案');
+  const version = [room.current, ...room.history].find(plan => plan?.versionNo === Number(body.versionNo));
+  assert(version, 404, 'VERSION_NOT_FOUND', '方案版本不存在');
+  const candidate = version.candidates.find(item => item.id === body.candidateId);
+  assert(candidate, 404, 'CANDIDATE_NOT_FOUND', '路线方案不存在');
+  assert(shares.size < 5000, 503, 'CAPACITY', '当前分享链接数量已满');
+  const shareId = id('share');
+  const { commutes, returnCommutes, ...route } = structuredClone(candidate);
+  const share = { id: shareId, city: room.city, date: version.input.date, meetTime: version.input.meetTime,
+    candidate: route, createdAt: now() };
+  shares.set(shareId, share);
+  return structuredClone(share);
+}
+export function getPublicShare(shareId) {
+  const share = shares.get(shareId);
+  assert(share, 404, 'SHARE_NOT_FOUND', '分享链接不存在或已失效');
+  return structuredClone(share);
 }

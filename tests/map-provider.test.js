@@ -113,3 +113,13 @@ test('a user-specified restaurant remains in the restaurant stage', async () => 
   const result = await generateCandidates({ ...input, specifiedPlaces: ['必去餐厅'] }, { provider });
   assert.equal(result.candidates[0].stops[1].id, 'pinned');
 });
+
+test('food preferences are included in restaurant POI searches while activity order stays intact', async () => {
+  const provider = fakeProvider();
+  const queries = [];
+  const searchPlaces = provider.searchPlaces;
+  provider.searchPlaces = async args => { queries.push(args.query); return searchPlaces(args); };
+  await generateCandidates({ ...input, activities: ['KTV', '餐厅'], preferenceSearchTerms: ['清淡餐厅', '粤菜'] }, { provider });
+  assert.ok(queries.includes('餐厅 清淡餐厅 粤菜'));
+  assert.ok(queries.includes('KTV'));
+});

@@ -44,6 +44,14 @@ test('real HTTP flow: auth, isolation, one vote, version conflicts, rollback and
   };
   let plan = await waitComplete(); assert.equal(plan.versionNo, 1);
   assert.equal(plan.candidates.length, 2); assert.equal(plan.voteCount, 0);
+  const shareResponse = await request(path + '/shares', 'POST', token, { candidateId: plan.candidates[0].id, versionNo: 1 });
+  assert.equal(shareResponse.status, 201);
+  assert.equal((await request('/api/shares/' + shareResponse.data.id)).data.candidate.id, plan.candidates[0].id);
+  const publicShare = await request('/api/shares/' + shareResponse.data.id);
+  assert.equal(publicShare.status, 200);
+  assert.equal(JSON.stringify(publicShare.data).includes('局主私密地址'), false);
+  assert.equal('commutes' in publicShare.data.candidate, false);
+  assert.equal((await request(path + '/shares', 'POST', participantToken, { candidateId: plan.candidates[0].id, versionNo: 1 })).status, 201);
   const participantView = (await request(path, 'GET', participantToken)).data;
   assert.equal(JSON.stringify(participantView).includes('局主私密地址'), false);
   assert.equal(participantView.candidates[0].commutes[0].durationSeconds, 1200);
@@ -88,4 +96,67 @@ test('failed generation preserves existing candidate round; unsafe upstream erro
   assert.equal(view.generation.status, 'failed'); assert.equal(view.versionNo, 1);
   assert.equal(view.candidates[0].id, 'routesaved');
   assert.equal(JSON.stringify(view).includes('DO_NOT_LEAK'), false);
+});
+
+
+test('configured web origins are normalized for health checks, preflight, and room creation', async t => {
+  const app = createApp({
+    webOrigin: ' http://localhost:5173, http://127.0.0.1:5173, https://chumen4Now.top/ ',
+  });
+  app.listen(0, '127.0.0.1');
+  await once(app, 'listening');
+  t.after(() => { app.closeAllConnections(); return new Promise(resolve => app.close(resolve)); });
+  const base = 'http://127.0.0.1:' + app.address().port;
+
+  for (const origin of ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://chumen4now.top']) {
+    const response = await fetch(base + '/api/health', { headers: { Origin: origin } });
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('Access-Control-Allow-Origin'), origin);
+    assert.equal((await response.json()).ok, true);
+  }
+
+  const preflight = await fetch(base + '/api/rooms', {
+    method: 'OPTIONS',
+    headers: {
+      Origin: 'http://127.0.0.1:5173',
+      'Access-Control-Request-Method': 'POST',
+      'Access-Control-Request-Headers': 'content-type,authorization',
+    },
+  });
+  assert.equal(preflight.status, 204);
+  assert.equal(preflight.headers.get('Access-Control-Allow-Origin'), 'http://127.0.0.1:5173');
+
+  const created = await fetch(base + '/api/rooms', {
+    method: 'POST',
+    headers: { Origin: 'http://127.0.0.1:5173', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      city: '北京', memberLimit: 3,
+      origins: ['北京地铁四惠站', '北京丰台站', '北京三里屯'],
+    }),
+  });
+  assert.equal(created.status, 201);
+  assert.equal(created.headers.get('Access-Control-Allow-Origin'), 'http://127.0.0.1:5173');
+  const result = await created.json();
+  assert.equal(result.room.city, '北京');
+  assert.equal(result.room.memberLimit, 3);
+  assert.deepEqual(result.room.input.origins, ['北京地铁四惠站', '北京丰台站', '北京三里屯']);
+
+  for (const origin of ['https://chumen4now.top.example.com', 'http://127.0.0.1:9999', 'null']) {
+    const response = await fetch(base + '/api/health', { headers: { Origin: origin } });
+    assert.equal(response.status, 403);
+    assert.equal(response.headers.get('Access-Control-Allow-Origin'), null);
+    assert.equal((await response.json()).code, 'ORIGIN_NOT_ALLOWED');
+  }
+});
+
+test('a production-only origin allowlist rejects local origins', async t => {
+  const app = createApp({ webOrigin: 'https://chumen4now.top' });
+  app.listen(0, '127.0.0.1');
+  await once(app, 'listening');
+  t.after(() => { app.closeAllConnections(); return new Promise(resolve => app.close(resolve)); });
+  const response = await fetch('http://127.0.0.1:' + app.address().port + '/api/health', {
+    headers: { Origin: 'http://localhost:5173' },
+  });
+  assert.equal(response.status, 403);
+  assert.equal((await response.json()).code, 'ORIGIN_NOT_ALLOWED');
 });

@@ -13,6 +13,8 @@ const strip = value => String(value || '').replace(/[\s()（）]/g, '').toLowerC
 const publicError = error => error instanceof MapProviderError ? error.message : '地图查询失败，请稍后重试。';
 const unique = values => [...new Set(values)];
 const activityQuery = value => String(value).trim().replace(/\s*(?:\/|／|或)\s*/g, '$');
+const isFoodStage = value => category(value) === 'food';
+const stageQuery = (activity, terms = []) => [activityQuery(activity), ...(isFoodStage(activity) ? terms : [])].join(' ');
 
 function category(value) {
   if (/ktv|卡拉|唱歌|歌舞/i.test(value)) return 'ktv';
@@ -89,7 +91,7 @@ async function buildCandidate(provider, first, stages, origins, input, signal) {
   for (let stageIndex = 1; stageIndex < stages.length; stageIndex += 1) {
     signal?.throwIfAborted();
     const stage = stages[stageIndex], previous = stops.at(-1);
-    const results = stage.place ? [stage.place] : await provider.searchPlaces({ query: activityQuery(stage.activity), city: input.city, location: previous.location, radius: 1800, signal });
+    const results = stage.place ? [stage.place] : await provider.searchPlaces({ query: stageQuery(stage.activity, input.preferenceSearchTerms), city: input.city, location: previous.location, radius: 1800, signal });
     const possible = results.filter(place => !stops.some(stop => stop.id === place.id) && (stage.place || stageMatches(place, stage.activity)))
       .sort((a, b) => straightDistance(previous.location, a.location) - straightDistance(previous.location, b.location));
     let chosen;
@@ -136,7 +138,7 @@ export async function generateCandidates(rawInput, { onProgress = () => {}, sign
     city: rawInput.city || '上海', originQueries: rawInput.originQueries || rawInput.origins || [], activities: rawInput.activities || [],
     specifiedPlaces: rawInput.specifiedPlaces || [], budgetPerPerson: Number(rawInput.budgetPerPerson) || 500,
     walkMinutes: Number(rawInput.walkMinutes) || 15, rideMinutes: Number(rawInput.rideMinutes) || 10,
-    accessMinutes: Number(rawInput.accessMinutes) || 20,
+    accessMinutes: Number(rawInput.accessMinutes) || 20, preferenceSearchTerms: Array.isArray(rawInput.preferenceSearchTerms) ? rawInput.preferenceSearchTerms.filter(term => typeof term === 'string').slice(0, 4) : [],
   };
   if (!input.originQueries.length) throw new MapProviderError('至少需要一个出发地。', 'INVALID_INPUT');
   if (!input.activities.length && !input.specifiedPlaces.length) throw new MapProviderError('至少需要一个活动或指定店铺。', 'INVALID_INPUT');
@@ -155,7 +157,7 @@ export async function generateCandidates(rawInput, { onProgress = () => {}, sign
   onProgress({ stage: 'searching', message: '正在查找活动地点，随后校验真实步行与骑行路线。' });
   const center = midpoint(origins);
   const firstStage = stages[0];
-  const firstPlaces = firstStage.place ? [firstStage.place] : (await provider.searchPlaces({ query: activityQuery(firstStage.activity), city: input.city, location: center, radius: 3500, signal }))
+  const firstPlaces = firstStage.place ? [firstStage.place] : (await provider.searchPlaces({ query: stageQuery(firstStage.activity, input.preferenceSearchTerms), city: input.city, location: center, radius: 3500, signal }))
     .filter(place => stageMatches(place, firstStage.activity));
   if (!firstPlaces.length) return { candidates: [], warnings: [...warnings, `候选区域内未找到${firstStage.activity}，请更换活动或指定店铺。`] };
   const selected = firstPlaces.slice(0, 3);

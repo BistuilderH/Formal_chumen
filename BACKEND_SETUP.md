@@ -23,7 +23,7 @@ npm run dev
 | VITE_API_BASE_URL | 本地可填 http://localhost:8787；留空时前端请求同域 /api，本地由 Vite 转发 | src/main.js、vite.config.js |
 | BAIDU_MAP_SERVER_AK | 百度服务端 AK，只用于后端调用地点和路线 | server/map-provider.js |
 | DEEPSEEK_API_KEY | 模型偏好解析密钥 | server/llm-provider.js |
-| DEEPSEEK_MODEL | 可选，默认 deepseek-chat | server/config.js |
+| DEEPSEEK_MODEL | 可选，默认 deepseek-flash | server/config.js |
 | WEB_ORIGIN | 允许访问后端的前端来源，可用逗号分隔，不带路径或末尾斜线 | server/index.js |
 | PORT | 后端端口，默认 8787 | server/config.js |
 | HOST | 本地默认 127.0.0.1，云服务器按平台要求设置监听地址 | server/config.js |
