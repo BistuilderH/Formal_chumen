@@ -1,1 +1,11 @@
 node_modules/
+
+# Tencent Cloud EdgeOne
+.env
+.env.*
+!.env.example
+dist/
+*.log
+.tmp/
+.edgeone/*
+.tef_dist/*

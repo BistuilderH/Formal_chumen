@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="720" viewBox="0 0 1600 720" role="img" aria-labelledby="title desc">
+  <title id="title">我们现在就出门</title>
+  <desc id="desc">2.5D 城市地图视角，三处活动点由红色路线连接，多位用户从不同方向沿彩色路线汇入自定义商圈。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101a2b"/><stop offset=".56" stop-color="#192b43"/><stop offset="1" stop-color="#30455b"/></linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff6959" stop-opacity=".38"/><stop offset="1" stop-color="#ffb15b" stop-opacity="0"/></linearGradient>
+    <linearGradient id="district" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff4d6"/><stop offset="1" stop-color="#f0c978"/></linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5e7590"/><stop offset="1" stop-color="#3e566e"/></linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="14" stdDeviation="15" flood-color="#06101e" flood-opacity=".38"/></filter>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="14"/></filter>
+    <filter id="lineGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse" patternTransform="skewY(-26)"><path d="M48 0H0V48" fill="none" stroke="#93abc0" stroke-opacity=".09"/></pattern>
+  </defs>
+
+  <rect width="1600" height="720" fill="url(#bg)"/>
+  <ellipse cx="1130" cy="365" rx="440" ry="300" fill="url(#glow)" filter="url(#soft)"/>
+  <path d="M710 0H1600V720H620Z" fill="url(#grid)"/>
+
+  <!-- editorial copy block -->
+  <g transform="translate(92 112)" fill="#fff9ef">
+    <text x="0" y="0" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="16" font-weight="700" letter-spacing="4" fill="#ff9d72">CHUMEN / 出门</text>
+    <rect x="0" y="34" width="62" height="4" rx="2" fill="#ef5b4d"/>
+    <text x="0" y="124" font-family="'Noto Serif SC','Songti SC','Microsoft YaHei',serif" font-size="64" font-weight="700" letter-spacing="-3">我们现在就出门</text>
+    <text x="3" y="174" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="21" fill="#c9d5e0">把分散的出发地，编排成今晚的一条路。</text>
+    <text x="3" y="230" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="14" fill="#91a7ba">自定义商圈 · 多人协作 · 真实通勤路线</text>
+    <g transform="translate(0 296)">
+      <rect width="220" height="48" rx="24" fill="#ef5b4d"/>
+      <text x="28" y="31" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="16" font-weight="700" fill="#fff">开始规划今晚 ↗</text>
+    </g>
+    <g transform="translate(0 405)" font-family="Arial,'Microsoft YaHei',sans-serif">
+      <circle cx="8" cy="8" r="5" fill="#ef5b4d"/><text x="25" y="14" font-size="13" fill="#d8e0e7">主游玩路线</text>
+      <circle cx="150" cy="8" r="5" fill="#65d6c0"/><text x="167" y="14" font-size="13" fill="#d8e0e7">成员出发地</text>
+    </g>
+  </g>
+
+  <!-- isometric city floor -->
+  <path d="M625 598L1165 298L1535 510L988 704Z" fill="#162538" stroke="#72899e" stroke-opacity=".32"/>
+  <path d="M676 584L1165 313L1481 496L988 674Z" fill="url(#road)" opacity=".95"/>
+  <path d="M738 573L1166 336L1415 480L988 640Z" fill="none" stroke="#aec0ce" stroke-opacity=".2" stroke-width="2"/>
+  <path d="M810 613L1190 401M915 655L1321 432M1012 585L1291 428M857 536L1133 382" fill="none" stroke="#dce5eb" stroke-opacity=".17" stroke-width="3" stroke-dasharray="10 13"/>
+
+  <!-- white model city buildings -->
+  <g filter="url(#shadow)" stroke="#b8c5d0" stroke-width="1">
+    <g transform="translate(850 420)"><path d="M0 0L55-31L103-4L48 28Z" fill="#f5f7f6"/><path d="M0 0V65L48 95V28Z" fill="#cad5dc"/><path d="M48 28L103-4V59L48 95Z" fill="#aebfc9"/><path d="M13 12v40M28 4v45M44-6v44" stroke="#8eabb7"/></g>
+    <g transform="translate(1018 358)"><path d="M0 0L61-35L115-4L54 32Z" fill="#fffdf8"/><path d="M0 0V98L54 130V32Z" fill="#cfd9dd"/><path d="M54 32L115-4V94L54 130Z" fill="#a6b8c2"/><path d="M16 12v65M33 3v75M50-7v75" stroke="#8faab6"/></g>
+    <g transform="translate(1202 450)"><path d="M0 0L67-38L122-7L54 33Z" fill="#fffaf1"/><path d="M0 0V74L54 107V33Z" fill="#d4dce0"/><path d="M54 33L122-7V68L54 107Z" fill="#a6b6bf"/><path d="M16 11v48M34 1v59M52-9v59" stroke="#8faab6"/></g>
+    <g transform="translate(1320 370)"><path d="M0 0L50-29L92-5L42 24Z" fill="#f7faf8"/><path d="M0 0V62L42 87V24Z" fill="#c8d5dc"/><path d="M42 24L92-5V57L42 87Z" fill="#a1b4bf"/></g>
+    <g transform="translate(736 495)"><path d="M0 0L44-26L82-4L38 22Z" fill="#fffdf8"/><path d="M0 0V56L38 79V22Z" fill="#cad6dc"/><path d="M38 22L82-4V52L38 79Z" fill="#a9bac3"/></g>
+    <g transform="translate(1113 510)"><path d="M0 0L52-30L100-3L48 28Z" fill="#fffdf8"/><path d="M0 0V53L48 82V28Z" fill="#d0d9dd"/><path d="M48 28L100-3V50L48 82Z" fill="#a7b9c2"/></g>
+  </g>
+
+  <!-- custom district boundary -->
+  <path d="M900 314 C1000 251 1171 248 1300 323 C1367 362 1386 427 1332 488 C1261 568 1067 574 929 510 C846 472 827 381 900 314Z" fill="#f7c96d" fill-opacity=".10" stroke="#ffcf78" stroke-width="2" stroke-dasharray="8 9"/>
+  <path d="M915 330 C1015 272 1152 276 1275 337" fill="none" stroke="#ffdc8b" stroke-width="1" opacity=".65"/>
+  <text x="1030" y="304" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="13" font-weight="700" letter-spacing="2" fill="#ffe0a1">CUSTOM DISTRICT / 自定义商圈</text>
+
+  <!-- multiple member commute curves -->
+  <g fill="none" stroke-linecap="round" filter="url(#lineGlow)">
+    <path d="M670 220 C755 253 794 313 892 373" stroke="#65d6c0" stroke-width="5" stroke-dasharray="12 10"/>
+    <path d="M718 641 C786 581 847 545 947 479" stroke="#ffad63" stroke-width="5" stroke-dasharray="12 10"/>
+    <path d="M1420 176 C1362 240 1324 285 1245 357" stroke="#9d8cff" stroke-width="5" stroke-dasharray="12 10"/>
+    <path d="M1514 595 C1435 568 1389 523 1309 464" stroke="#62b8ff" stroke-width="5" stroke-dasharray="12 10"/>
+    <path d="M790 120 C865 171 914 229 1005 302" stroke="#ff7692" stroke-width="4" stroke-dasharray="10 12" opacity=".9"/>
+  </g>
+  <g font-family="Arial,'Microsoft YaHei',sans-serif" font-size="12" font-weight="700">
+    <g><circle cx="670" cy="220" r="9" fill="#65d6c0"/><circle cx="670" cy="220" r="16" fill="none" stroke="#65d6c0" stroke-opacity=".25"/><text x="642" y="199" fill="#c9f5e9">成员 A</text></g>
+    <g><circle cx="718" cy="641" r="9" fill="#ffad63"/><circle cx="718" cy="641" r="16" fill="none" stroke="#ffad63" stroke-opacity=".25"/><text x="682" y="678" fill="#ffe1bd">成员 B</text></g>
+    <g><circle cx="1420" cy="176" r="9" fill="#9d8cff"/><circle cx="1420" cy="176" r="16" fill="none" stroke="#9d8cff" stroke-opacity=".25"/><text x="1438" y="170" fill="#ddd8ff">成员 C</text></g>
+    <g><circle cx="1514" cy="595" r="9" fill="#62b8ff"/><circle cx="1514" cy="595" r="16" fill="none" stroke="#62b8ff" stroke-opacity=".25"/><text x="1467" y="632" fill="#d0ebff">成员 D</text></g>
+  </g>
+
+  <!-- main leisure route: three points -->
+  <path d="M932 392 C1002 322 1081 347 1127 408 C1170 465 1223 470 1300 405" fill="none" stroke="#fff8e7" stroke-width="14" opacity=".86"/>
+  <path d="M932 392 C1002 322 1081 347 1127 408 C1170 465 1223 470 1300 405" fill="none" stroke="#ef5b4d" stroke-width="8" filter="url(#lineGlow)"/>
+  <g font-family="Arial,'Microsoft YaHei',sans-serif">
+    <g transform="translate(921 381)"><circle r="19" fill="#ef5b4d" stroke="#fff5e6" stroke-width="4"/><text x="-5" y="6" fill="#fff" font-size="14" font-weight="800">1</text><rect x="-18" y="27" width="78" height="26" rx="13" fill="#ef5b4d"/><text x="-5" y="45" fill="#fff" font-size="12" font-weight="700">玩点</text></g>
+    <g transform="translate(1127 408)"><circle r="19" fill="#ef5b4d" stroke="#fff5e6" stroke-width="4"/><text x="-5" y="6" fill="#fff" font-size="14" font-weight="800">2</text><rect x="-22" y="27" width="78" height="26" rx="13" fill="#ef5b4d"/><text x="-7" y="45" fill="#fff" font-size="12" font-weight="700">吃饭</text></g>
+    <g transform="translate(1300 405)"><circle r="19" fill="#ef5b4d" stroke="#fff5e6" stroke-width="4"/><text x="-5" y="6" fill="#fff" font-size="14" font-weight="800">3</text><rect x="-20" y="27" width="78" height="26" rx="13" fill="#ef5b4d"/><text x="-7" y="45" fill="#fff" font-size="12" font-weight="700">酒吧</text></g>
+  </g>
+
+  <!-- small annotation card -->
+  <g transform="translate(1190 82)" filter="url(#shadow)">
+    <rect width="284" height="78" rx="16" fill="#f8f5ed" fill-opacity=".96"/>
+    <circle cx="28" cy="28" r="7" fill="#ef5b4d"/><text x="48" y="33" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="13" font-weight="700" fill="#182538">今晚的路线</text>
+    <text x="22" y="57" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="12" fill="#647387">3 个活动点 · 4 位成员 · 一条路见面</text>
+  </g>
+</svg>
